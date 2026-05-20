@@ -1,6 +1,6 @@
 from models.student import Student
 from models.course import Course
-from utils.validators import is_not_empty
+from utils.validators import is_valid_grade, is_not_empty
 
 
 class GradeManager:
@@ -35,6 +35,33 @@ class GradeManager:
 
     def course_exists(self, course_name):
         return course_name.strip() in self.__courses
+
+    def assign_grade_to_existing(self, student_id, course_name, grade):
+        student_id = str(student_id).strip()
+        course_name = course_name.strip()
+
+        if not self.student_exists(student_id):
+            raise ValueError("Student not found. Add the student first.")
+
+        if not self.course_exists(course_name):
+            raise ValueError("Course not found. Add the course first.")
+
+        if not is_valid_grade(str(grade)):
+            raise ValueError("Grade must be a number from 0 to 100.")
+
+        student = self.__students[student_id]
+        course = self.__courses[course_name]
+
+        student.add_grade(course.get_name(), float(grade))
+
+    def assign_grade(self, student_id, name, course_name, grade):
+        if not is_valid_grade(str(grade)):
+            raise ValueError("Grade must be a number from 0 to 100.")
+
+        student = self.add_student(student_id, name)
+        course = self.add_course(course_name)
+
+        student.add_grade(course.get_name(), float(grade))
 
     def iter_students(self):
         for student in self.__students.values():
