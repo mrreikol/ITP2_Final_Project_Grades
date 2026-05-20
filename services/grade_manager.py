@@ -65,6 +65,32 @@ class GradeManager:
 
         student.add_grade(course.get_name(), float(grade))
 
+    def load_from_rows(self, rows):
+        errors = []
+
+        for row_number, row in enumerate(rows, start=2):
+            try:
+                self.assign_grade(
+                    row["student_id"],
+                    row["name"],
+                    row["course"],
+                    row["grade"]
+                )
+
+            except KeyError as error:
+                errors.append(
+                    "Row " + str(row_number) +
+                    ": missing column " + str(error)
+                )
+
+            except ValueError as error:
+                errors.append(
+                    "Row " + str(row_number) +
+                    ": " + str(error)
+                )
+
+        return errors
+
     def iter_students(self):
         for student in self.__students.values():
             yield student
@@ -106,6 +132,26 @@ class GradeManager:
 
         return rows
 
+    def all_students_with_courses_rows(self):
+        rows = []
+
+        for student in self.iter_students():
+            course_names = student.get_course_names()
+
+            if len(course_names) == 0:
+                courses_text = "No courses"
+            else:
+                courses_text = ", ".join(course_names)
+
+            rows.append({
+                "student_id": student.get_id(),
+                "name": student.get_name(),
+                "gpa": round(student.calculate_gpa(), 2),
+                "courses": courses_text
+            })
+
+        return rows
+
     def top_students(self, limit=3):
         students = list(self.iter_students())
 
@@ -136,3 +182,23 @@ class GradeManager:
                 self.iter_students()
             )
         )
+
+    def all_student_ids(self):
+        return set(self.__students.keys())
+
+    def to_json_data(self):
+        students_data = []
+
+        for student in self.iter_students():
+            students_data.append({
+                "student_id": student.get_id(),
+                "name": student.get_name(),
+                "grades": student.get_grades(),
+                "average_grade": round(student.average_grade(), 2),
+                "gpa": round(student.calculate_gpa(), 2)
+            })
+
+        return {
+            "students": students_data,
+            "courses": self.get_course_names()
+        }
