@@ -19,6 +19,32 @@ def print_menu():
     print("8. Show all students")
     print("9. Exit")
 
+def add_student_menu(manager):
+    try:
+        student_id = input("Student ID: ")
+        name = input("Student name: ")
+        manager.add_student(student_id, name)
+        print("Student added successfully.")
+    except ValueError as error:
+        print("Error:", error)
+
+def add_course_menu(manager):
+    try:
+        course_name = input("Course name: ")
+        manager.add_course(course_name)
+        print("Course added successfully.")
+    except ValueError as error:
+        print("Error:", error)
+
+def assign_grade_menu(manager):
+    try:
+        student_id = input("Student ID: ")
+        course_name = input("Course name: ")
+        grade = input("Grade 0-100: ")
+        manager.assign_grade_to_existing(student_id, course_name, grade)
+        print("Grade assigned successfully.")
+    except ValueError as error:
+        print("Error:", error)
 
 def main():
     manager = GradeManager()
@@ -27,12 +53,17 @@ def main():
         print_menu()
         choice = input("Choose an option: ")
 
-        if choice == "9":
+        if choice == "1":
+            add_student_menu(manager)
+        elif choice == "2":
+            add_course_menu(manager)
+        elif choice == "3":
+            assign_grade_menu(manager)
+        elif choice == "9":
             print("Goodbye!")
             break
         else:
             print("Invalid choice. Please choose from 1 to 9.")
-
 
 if __name__ == "__main__":
     main()
