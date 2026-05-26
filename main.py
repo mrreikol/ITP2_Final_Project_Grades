@@ -1,7 +1,7 @@
 from services.grade_manager import GradeManager
 from utils.file_handler import read_csv_rows, write_csv, write_json
 
-DATA_FILE = "data/students.csv"
+DATA_FILE = "data/grades.csv"
 GPA_REPORT_FILE = "reports/gpa_report.csv"
 TOP_REPORT_FILE = "reports/top_students.json"
 DATA_JSON_FILE = "reports/students_data.json"
@@ -17,7 +17,8 @@ def print_menu():
     print("6. Import data from CSV")
     print("7. Save data to JSON")
     print("8. Show all students")
-    print("9. Exit")
+    print("9. Show students above GPA threshold") 
+    print("10. Exit")
 
 def add_student_menu(manager):
     try:
@@ -120,6 +121,26 @@ def show_all_students_menu(manager):
 
     for row in rows:
         print(row["student_id"], "|", row["name"], "|", row["gpa"], "|", row["courses"])
+        
+def show_students_above_gpa_menu(manager):
+    try:
+        threshold = float(input("Enter minimum GPA (0.0 - 4.0): "))
+        if threshold < 0 or threshold > 4:
+            print("Error: GPA must be between 0.0 and 4.0.")
+            return
+
+        results = manager.students_above_gpa(threshold)
+
+        if len(results) == 0:
+            print("No students found above GPA", threshold)
+            return
+
+        print("\n--- Students above GPA", threshold, "---")
+        for student in results:
+            print(student.get_id(), "|", student.get_name(), "| GPA:", round(student.calculate_gpa(), 2))
+
+    except ValueError:
+        print("Error: Please enter a valid number.")
 
 def main():
     manager = GradeManager()
@@ -145,10 +166,12 @@ def main():
         elif choice == "8":
             show_all_students_menu(manager)
         elif choice == "9":
+            show_students_above_gpa_menu(manager) 
+        elif choice == "10":
             print("Goodbye!")
             break
         else:
-            print("Invalid choice. Please choose from 1 to 9.")
+            print("Invalid choice. Please choose from 1 to 10.")
 
 if __name__ == "__main__":
     main()
