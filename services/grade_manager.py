@@ -16,9 +16,13 @@ class GradeManager:
         student_id = str(student_id).strip()
         name = name.strip()
 
-        if student_id not in self.__students:
-            self.__students[student_id] = Student(student_id, name)
+        if not student_id.isdigit() or int(student_id) <= 0:
+            raise ValueError("Student ID must be a positive number (e.g. 1, 2, 3).")
 
+        if student_id in self.__students:
+            raise ValueError("Student with ID " + student_id + " already exists.")
+
+        self.__students[student_id] = Student(student_id, name)
         return self.__students[student_id]
 
     def add_course(self, course_name):
@@ -55,14 +59,19 @@ class GradeManager:
         student.add_grade(course.get_name(), float(grade))
 
     def assign_grade(self, student_id, name, course_name, grade):
-        """Used when importing CSV because CSV contains student name too."""
+        """Used when importing CSV. If student already exists, just add the new grade."""
 
         if not is_valid_grade(str(grade)):
             raise ValueError("Grade must be a number from 0 to 100.")
 
-        student = self.add_student(student_id, name)
-        course = self.add_course(course_name)
+        student_id = str(student_id).strip()
+        
+        if self.student_exists(student_id):
+            student = self.__students[student_id]
+        else:
+            student = self.add_student(student_id, name)
 
+        course = self.add_course(course_name)
         student.add_grade(course.get_name(), float(grade))
 
     def load_from_rows(self, rows):
@@ -91,6 +100,9 @@ class GradeManager:
 
         return errors
 
+    # ADVANCED FEATURE 1:
+    # iter_students() uses 'yield' instead of building a full list.
+    # This means students are produced one by one, saving memory.
     def iter_students(self):
         for student in self.__students.values():
             yield student
@@ -152,6 +164,8 @@ class GradeManager:
 
         return rows
 
+    #ADVANCED FEATURE 2:
+    lambda is used as a short anonymous function to extract GPA for sorting.
     def top_students(self, limit=3):
         students = list(self.iter_students())
 
@@ -175,6 +189,7 @@ class GradeManager:
 
         return rows
 
+    #ADVANCED FEATURE 3
     def students_above_gpa(self, minimum_gpa):
         return list(
             filter(
