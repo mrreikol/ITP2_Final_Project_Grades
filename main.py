@@ -1,7 +1,7 @@
 from services.grade_manager import GradeManager
 from utils.file_handler import read_csv_rows, write_csv, write_json
 
-DATA_FILE = "data/grades.csv"
+DATA_FILE = "data/students.csv"
 GPA_REPORT_FILE = "reports/gpa_report.csv"
 TOP_REPORT_FILE = "reports/top_students.json"
 DATA_JSON_FILE = "reports/students_data.json"
