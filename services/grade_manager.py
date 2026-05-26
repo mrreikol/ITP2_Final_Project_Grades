@@ -101,8 +101,8 @@ class GradeManager:
         return errors
 
     # ADVANCED FEATURE 1:
-    # iter_students() uses 'yield' instead of building a full list.
-    # This means students are produced one by one, saving memory.
+    # iter_students() uses 'yield' instead of building a full list
+    # This means students are produced one by one, saving memory
     def iter_students(self):
         for student in self.__students.values():
             yield student
@@ -164,8 +164,7 @@ class GradeManager:
 
         return rows
 
-    #ADVANCED FEATURE 2:
-    lambda is used as a short anonymous function to extract GPA for sorting.
+    #ADVANCED FEATURE 2: lambda is used as a short anonymous function to extract GPA for sorting
     def top_students(self, limit=3):
         students = list(self.iter_students())
 
